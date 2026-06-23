@@ -1,5 +1,6 @@
 import gc
 import copy
+import torch
 from torch.utils.data import Subset
 from sklearn.model_selection import StratifiedKFold
 
@@ -34,13 +35,13 @@ def train_loop(model, optimizer, criterion, train_loader, config, epochs, test_l
         for step, (images, labels) in enumerate(train_loader):
             ram_a = process.memory_info().rss / 1024**3
 
-            #images, labels = images.to(config.device), labels.to(config.device)
+            images, labels = images.to(config.device), labels.to(config.device)
 
             #ram_b = process.memory_info().rss / 1024**3
 
-            #optimizer.zero_grad()
+            optimizer.zero_grad()
 
-            #guesses = model(images)
+            guesses = model(images)
             #loss = criterion(guesses, labels)
 
             #ram_c = process.memory_info().rss / 1024**3
@@ -61,6 +62,8 @@ def train_loop(model, optimizer, criterion, train_loader, config, epochs, test_l
 
             #if config.verbose:
             #    log(f"Epoch [{epoch+1}/{epochs}] | Batch [{step+1}/{len(train_loader)}] | Loss: {loss_value:.4f}")
+
+            torch.cuda.empty_cache()
 
             ram_after = process.memory_info().rss / 1024**3
             log(f"RAM: {ram_a:.2f} GB → {ram_after:.2f} GB (delta: {ram_after - ram_a:.3f} GB)")
