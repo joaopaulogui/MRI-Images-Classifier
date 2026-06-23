@@ -26,13 +26,14 @@ def train_loop(model, optimizer, criterion, train_loader, config, epochs, test_l
     best_model_state = None
 
     for epoch in range(epochs):
-        ram_a = process.memory_info().rss / 1024**3
-
+    
         model.train()
         correct = 0
         total = 0
 
         for step, (images, labels) in enumerate(train_loader):
+            ram_a = process.memory_info().rss / 1024**3
+
             images, labels = images.to(config.device), labels.to(config.device)
 
             ram_b = process.memory_info().rss / 1024**3
