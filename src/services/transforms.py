@@ -1,0 +1,51 @@
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
+
+
+def get_train_transforms(img_width, img_height):
+    return A.Compose([
+        A.Resize(img_width, img_height),
+
+        # ── Geometria ─────────────────────────────────────────────────────
+        A.HorizontalFlip(p=0.5),
+
+        # Rotação conservadora como o artigo sugere
+        A.Rotate(limit=5, border_mode=0, p=0.5),
+
+        # Shear reduzido — ±0.5 rad (~28°) era agressivo demais,
+        # ±0.15 rad (~8°) simula os cortes reais sem distorcer anatomia
+        A.Affine(
+            shear={"x": (-0.15, 0.15), "y": (-0.15, 0.15)},
+            fit_output=True,
+            p=0.4,
+        ),
+
+        # Resize após Affine para garantir 224x224
+        A.Resize(img_width, img_height),
+
+        A.Downscale(scale_range=(0.5, 0.75), p=0.3),
+
+        # Blur leve a moderado
+        A.GaussianBlur(blur_limit=(3, 7), p=0.3),
+
+        # Ruído moderado
+        A.GaussNoise(std_range=(0.01, 0.08), p=0.3),
+
+        # ── Intensidade e contraste ───────────────────────────────────────
+        A.CLAHE(clip_limit=(1.0, 4.0), tile_grid_size=(8, 8), p=0.5),
+        A.RandomBrightnessContrast(brightness_limit=0.2, contrast_limit=0.2, p=0.5),
+        A.RandomGamma(gamma_limit=(80, 120), p=0.3),
+
+        # ── Normalização ImageNet ─────────────────────────────────────────
+        A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ToTensorV2(),
+    ])
+
+
+def get_test_transforms(img_width, img_height):
+    return A.Compose([
+        A.Resize(img_width, img_height),
+        A.CLAHE(clip_limit=3.0, tile_grid_size=(8, 8), p=1.0),
+        A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ToTensorV2(),
+    ])
