@@ -34,36 +34,36 @@ def train_loop(model, optimizer, criterion, train_loader, config, epochs, test_l
         for step, (images, labels) in enumerate(train_loader):
             ram_a = process.memory_info().rss / 1024**3
 
-            images, labels = images.to(config.device), labels.to(config.device)
+            #images, labels = images.to(config.device), labels.to(config.device)
 
-            ram_b = process.memory_info().rss / 1024**3
+            #ram_b = process.memory_info().rss / 1024**3
 
-            optimizer.zero_grad()
+            #optimizer.zero_grad()
 
-            guesses = model(images)
-            loss = criterion(guesses, labels)
+            #guesses = model(images)
+            #loss = criterion(guesses, labels)
 
-            ram_c = process.memory_info().rss / 1024**3
+            #ram_c = process.memory_info().rss / 1024**3
 
-            loss.backward()
-            optimizer.step()
+            #loss.backward()
+            #optimizer.step()
 
-            predicted = guesses.argmax(dim=1)
-            correct += (predicted == labels).sum().item()
-            total += labels.size(0)
+            #predicted = guesses.argmax(dim=1)
+            #correct += (predicted == labels).sum().item()
+            #total += labels.size(0)
 
-            ram_d = process.memory_info().rss / 1024**3
+            #ram_d = process.memory_info().rss / 1024**3
 
-            loss_value = loss.item()
+            #loss_value = loss.item()
 
-            del images, labels, guesses, predicted, loss
-            gc.collect()
+            #del images, labels, guesses, predicted, loss
+            #gc.collect()
 
-            if config.verbose:
-                log(f"Epoch [{epoch+1}/{epochs}] | Batch [{step+1}/{len(train_loader)}] | Loss: {loss_value:.4f}")
+            #if config.verbose:
+            #    log(f"Epoch [{epoch+1}/{epochs}] | Batch [{step+1}/{len(train_loader)}] | Loss: {loss_value:.4f}")
 
             ram_after = process.memory_info().rss / 1024**3
-            log(f"RAM: {ram_a:.2f} GB → {ram_b:.2f} GB → {ram_c:.2f} GB → {ram_d:.2f} GB → {ram_after:.2f} GB (delta: {ram_after - ram_a:.3f} GB)")
+            log(f"RAM: {ram_a:.2f} GB → {ram_after:.2f} GB (delta: {ram_after - ram_a:.3f} GB)")
 
 
         train_accuracy = correct / total
