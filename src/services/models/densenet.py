@@ -89,8 +89,6 @@ def train_densenet(train_loader, test_loader, config, epochs=50, lr=0.001, model
         epochs, 
         test_loader, 
         scheduler,
-        verbose=config.verbose, 
-        logger=config.logger
     )
 
     metrics = evaluate_model(densenet, test_loader)
