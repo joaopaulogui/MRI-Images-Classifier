@@ -76,7 +76,7 @@ def train_densenet(train_loader, test_loader, config, epochs=50, lr=0.001, model
 
     # ReduceLROnPlateau com patience maior para não decair LR rápido demais
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode="max", patience=7, factor=0.3, min_lr=1e-7
+        optimizer, mode="max", patience=10, factor=0.3, min_lr=1e-7
     )
 
     densenet = train_loop(
