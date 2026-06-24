@@ -1,5 +1,8 @@
 if __name__ == "__main__":
 
+    from src.utils.test_data_augmentations import test
+    test()
+
     from src.pipelines.train_pipeline import train_pipeline
     from src.services.controllers.inference_controller import infere
     from src.services.controllers.evaluate_controller import evaluate

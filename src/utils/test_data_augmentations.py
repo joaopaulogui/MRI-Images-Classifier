@@ -16,10 +16,12 @@ transforms = A.Compose([
         # Shear reduzido — ±0.5 rad (~28°) era agressivo demais,
         # ±0.15 rad (~8°) simula os cortes reais sem distorcer anatomia
         A.Affine(
-            shear={"x": (-0.5, 0.5), "y": (-0.5, 0.5)},
+            shear={"x": (-0.15, 0.15), "y": (-0.15, 0.15)},
             fit_output=True,
             p=0.4,
         ),
+
+        A.RandomCrop(height=200, width=200, p=0.2),
 
         # ── Degradação de qualidade ───────────────────────────────────────
         # Downscale moderado — simula scanner antigo sem destruir features
@@ -32,7 +34,7 @@ transforms = A.Compose([
         A.GaussNoise(std_range=(0.001, 0.015), p=0.3),
 
         # ── Intensidade e contraste ───────────────────────────────────────
-        A.RandomBrightnessContrast(brightness_limit=0.2, contrast_limit=0.2, p=0.5),
+        A.RandomBrightnessContrast(brightness_limit=(-0.1, 0.2), contrast_limit=(-0.1, 0.2), p=0.5),
         A.RandomGamma(gamma_limit=(85, 120), p=0.3),
 
         A.Resize(224, 224),
@@ -49,10 +51,7 @@ def test():
         pasta_saida = f'generated/data_augmented_images/{classe}'
         os.makedirs(pasta_saida, exist_ok=True)
 
-        print(classe)
-
         img_np = np.array(img).astype(np.float32) / 255.0
-        print(img_np.dtype)   # uint8 ou float?
         img_np = transforms(image=img_np)['image']
         img_np = (img_np * 255).astype(np.uint8)
         Image.fromarray(img_np).save(f'generated/data_augmented_images/{classe}/{idx}.jpg')
