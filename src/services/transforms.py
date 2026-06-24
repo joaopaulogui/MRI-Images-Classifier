@@ -20,7 +20,7 @@ def get_train_transforms(img_width, img_height):
             p=0.4,
         ),
 
-        A.RandomCrop(height=200, width=200, p=0.2),
+        A.RandomCrop(height=180, width=200, p=0.2),
 
         # ── Degradação de qualidade ───────────────────────────────────────
         # Downscale moderado — simula scanner antigo sem destruir features
@@ -33,7 +33,7 @@ def get_train_transforms(img_width, img_height):
         A.GaussNoise(std_range=(0.001, 0.015), p=0.3),
 
         # ── Intensidade e contraste ───────────────────────────────────────
-        A.RandomBrightnessContrast(brightness_limit=(-0.1, 0.2), contrast_limit=(-0.1, 0.2), p=0.5),
+        A.RandomBrightnessContrast(brightness_limit=(-0.1, 0.2), contrast_limit=(-0.1, 0.2), p=0.4),
         A.RandomGamma(gamma_limit=(85, 120), p=0.3),
 
         A.Resize(224, 224),
