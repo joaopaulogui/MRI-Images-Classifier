@@ -20,7 +20,7 @@ def get_train_transforms(img_width, img_height):
             p=0.4,
         ),
 
-        A.RandomCrop(height=180, width=200, p=0.2),
+        A.RandomCrop(height=200, width=200, p=0.2),
 
         # ── Degradação de qualidade ───────────────────────────────────────
         # Downscale moderado — simula scanner antigo sem destruir features

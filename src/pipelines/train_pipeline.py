@@ -3,7 +3,7 @@ import numpy as np
 from torchvision import datasets
 from sklearn.utils.class_weight import compute_class_weight
 
-from src.services.dataset import get_data_loader
+from src.services.dataset import get_data_loader, get_subsets
 from src.services.transforms import get_test_transforms, get_train_transforms
 from src.services.models.densenet import train_densenet, train_densenet_kfold
 from src.services.models.resnet import train_resnet, train_resnet_kfold
@@ -28,9 +28,11 @@ def _get_class_weights(loader, num_classes, device):
     return torch.tensor(weights, dtype=torch.float32).to(device)
 
 def train_pipeline(train_data_dir, test_data_dir, epochs, lr, min_accuracy, num_workers, verbose, early_stopping_patience, reduce_lr_patience):
-    train_ds = datasets.ImageFolder(root=train_data_dir)
-    test_ds = datasets.ImageFolder(root=test_data_dir)
-    classes = train_ds.classes
+    #train_ds = datasets.ImageFolder(root=train_data_dir)
+    #test_ds = datasets.ImageFolder(root=test_data_dir)
+    #classes = train_ds.classes
+    
+    train_ds, test_ds, classes = get_subsets(data_dir=train_data_dir)
 
     train_transforms = get_train_transforms(224, 224)
     test_transforms = get_test_transforms(224, 224)
