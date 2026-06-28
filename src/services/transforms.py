@@ -38,7 +38,7 @@ def get_train_transforms(img_width, img_height):
         #A.RandomGamma(gamma_limit=(90, 120), p=0.3),
 
         A.Resize(224, 224),
-        A.CLAHE(clip_limit=(2.0, 4.0), tile_grid_size=(8, 8), p=0.5),
+        A.CLAHE(clip_limit=3.0, tile_grid_size=(8, 8), p=0.5),
 
         # ── Normalização ImageNet ─────────────────────────────────────────
         A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
