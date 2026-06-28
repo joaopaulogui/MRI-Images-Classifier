@@ -4,6 +4,7 @@ from albumentations.pytorch import ToTensorV2
 
 def get_train_transforms(img_width, img_height):
     return A.Compose([
+        A.CLAHE(clip_limit=3.0, tile_grid_size=(8, 8), p=0.5),
         A.Resize(224, 224),
 
         # ── Geometria ─────────────────────────────────────────────────────
@@ -38,7 +39,6 @@ def get_train_transforms(img_width, img_height):
         #A.RandomGamma(gamma_limit=(90, 120), p=0.3),
 
         A.Resize(224, 224),
-        A.CLAHE(clip_limit=3.0, tile_grid_size=(8, 8), p=0.5),
 
         # ── Normalização ImageNet ─────────────────────────────────────────
         A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
@@ -48,8 +48,8 @@ def get_train_transforms(img_width, img_height):
 
 def get_test_transforms(img_width, img_height):
     return A.Compose([
-        A.Resize(img_width, img_height),
         A.CLAHE(clip_limit=3.0, tile_grid_size=(8, 8), p=1.0),
+        A.Resize(img_width, img_height),
         A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ToTensorV2(),
     ])
