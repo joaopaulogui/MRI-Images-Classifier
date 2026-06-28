@@ -113,6 +113,7 @@ def train_resnet_kfold(dataset, test_loader, config, epochs=10, lr=0.001, model=
         dataset=dataset,
         config=config,
         epochs=epochs, 
+        test_loader=test_loader
     )
 
     metrics = evaluate_model(resnet, test_loader)

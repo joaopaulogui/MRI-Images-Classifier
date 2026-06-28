@@ -89,6 +89,7 @@ def train_squeezenet_kfold(dataset, test_loader, config, epochs=10, lr=0.001, mo
         dataset=dataset,
         config=config,
         epochs=epochs, 
+        test_loader=test_loader
     )
 
     metrics = evaluate_model(squeezenet, test_loader)

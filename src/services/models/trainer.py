@@ -93,6 +93,7 @@ def train_kfold(
     dataset,
     config,
     epochs,
+    test_loader
 ):
     """
     Treina com K-Fold estratificado.
@@ -176,6 +177,6 @@ def train_kfold(
     # Usa menos épocas no retreino final para não overfitar
     # (sem val_loader real aqui, usamos o mesmo full loader só para monitorar loss)
     final_epochs = max(10, epochs // 3)
-    model = train_loop(model, optimizer, criterion, full_train_loader, config, final_epochs, full_train_loader)
+    model = train_loop(model, optimizer, criterion, full_train_loader, config, final_epochs, test_loader)
 
     return model
