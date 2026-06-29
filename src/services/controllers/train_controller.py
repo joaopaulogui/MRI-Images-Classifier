@@ -8,8 +8,8 @@ def train_models(train_ds, train_loader, test_loader, config, model_registry):
     
     tuning_schedule = [
         {"epochs": config.epochs, "lr": config.lr},
-        #{"epochs": config.epochs + 10, "lr": config.lr * 0.1},
-        #{"epochs": config.epochs + 20, "lr": config.lr * 0.01},
+        {"epochs": config.epochs + 10, "lr": config.lr * 0.1},
+        {"epochs": config.epochs + 20, "lr": config.lr * 0.01},
     ]
 
     with config.logger:
