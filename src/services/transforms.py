@@ -21,6 +21,7 @@ def get_train_transforms(img_width, img_height):
             #fit_output=True,
             p=0.4,
         ),
+        A.ElasticTransform(alpha=1, sigma=10, p=0.2),
 
         #A.RandomCrop(height=210, width=210, p=0.2),
 
@@ -38,7 +39,7 @@ def get_train_transforms(img_width, img_height):
         A.RandomBrightnessContrast(brightness_limit=(-0.1, 0.2), contrast_limit=(-0.1, 0.2), p=0.4),
         A.RandomGamma(gamma_limit=(90, 120), p=0.3),
 
-        A.CLAHE(clip_limit=3.0, tile_grid_size=(8, 8), p=0.5),
+        A.CLAHE(clip_limit=3.0, tile_grid_size=(8, 8), p=1),
         A.Resize(224, 224),
 
         # ── Normalização ImageNet ─────────────────────────────────────────
