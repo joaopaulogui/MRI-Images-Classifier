@@ -8,8 +8,6 @@ from src.services.models.metrics import evaluate_model
 def _build_optimizer(model, lr):
     """
     Otimizador com grupos de LR diferenciados por profundidade.
-    - transition3: LR muito baixo (features já bem treinadas)
-    - denseblock4: LR baixo
     - classifier: LR normal
     """
 
@@ -17,8 +15,8 @@ def _build_optimizer(model, lr):
 
     return optim.Adam(
         [
-            {"params": base_model.features[12].parameters(), "lr": lr / 10},
-            {"params": base_model.classifier[1].parameters(), "lr": lr},
+            {"params": base_model.features[-3:].parameters(), "lr": lr / 10},
+            {"params": base_model.classifier.parameters(), "lr": lr},
         ],
         weight_decay=1e-3,
     )
@@ -32,12 +30,15 @@ def setup_squeezenet(device, num_classes):
         param.requires_grad = False
 
     #Unreeze last features for better learning
-    for param in squeezenet.features[-1:].parameters(): #if it stops learning decrease to [-3:]
+    for param in squeezenet.features[-3:].parameters(): #if it stops learning decrease to [-3:]
         param.requires_grad = True
 
     num_in_channels = squeezenet.classifier[1].in_channels
 
-    squeezenet.classifier[1] = nn.Conv2d(num_in_channels, num_classes, kernel_size=(1, 1))
+    squeezenet.classifier[1] = nn.Sequential(
+        nn.Dropout(p=0.5),
+        nn.Conv2d(num_in_channels, num_classes, kernel_size=(1, 1)),
+    )
 
     squeezenet = squeezenet.to(device)
 
