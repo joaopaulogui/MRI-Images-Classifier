@@ -60,8 +60,8 @@ def train_pipeline(train_data_dir, test_data_dir, epochs, lr, min_accuracy, num_
 
     model_registry = {
         #"DenseNet":   {"train_fn": train_densenet,   "train_kfold_fn": train_densenet_kfold},
-        #"ResNet":     {"train_fn": train_resnet,     "train_kfold_fn": train_resnet_kfold},
-        "SqueezeNet": {"train_fn": train_squeezenet, "train_kfold_fn": train_squeezenet_kfold},
+        "ResNet":     {"train_fn": train_resnet,     "train_kfold_fn": train_resnet_kfold},
+        #"SqueezeNet": {"train_fn": train_squeezenet, "train_kfold_fn": train_squeezenet_kfold},
     }
 
     train_models(train_ds, train_loader, test_loader, config, model_registry)
