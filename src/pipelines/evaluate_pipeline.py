@@ -1,4 +1,6 @@
 import torch
+import os
+import matplotlib.pyplot as plt
 from torchvision import datasets
 
 from src.services.transforms import get_test_transforms
@@ -21,5 +23,20 @@ def evaluate_pipeline(data_dir, num_workers):
         "SqueezeNet": setup_squeezenet,
     }
 
+    os.makedirs(os.path.dirname("generated/graphs/"), exist_ok=True)
+    
+
+    names = []
+    accuracies = []
+    accuracies_kfold = []
+
     for name, setup_fn in models.items():
-        evaluate(test_loader, name, setup_fn)
+        metrics = evaluate(test_loader, name, setup_fn)
+        names.append(name)
+        accuracies.append(metrics["model_metrics"]["accuracy"])
+        accuracies.append(metrics["kfold_model_metrics"]["accuracy"])
+
+    plt.figure(figsize=(8,5))
+
+
+

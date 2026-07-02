@@ -1,6 +1,5 @@
 
 import torch
-import os
 import matplotlib.pyplot as plt
 from sklearn.metrics import ConfusionMatrixDisplay
 from src.services.models.metrics import evaluate_model
@@ -13,13 +12,17 @@ def evaluate(test_loader, model_name, setup_fn):
     k_fold_metrics = _eval_model(model_name+" With KFold", f"generated/{model_name.lower()}-with-kfold.pth", setup_fn, test_loader, device)
 
     disp = ConfusionMatrixDisplay(confusion_matrix=metrics["conf_matrix"])
-    os.makedirs(os.path.dirname("generated/graphs/"), exist_ok=True)
     disp.plot()
     plt.savefig(f"generated/graphs/{model_name}-confusion-matrix.png")
     
     kfold_disp = ConfusionMatrixDisplay(confusion_matrix=k_fold_metrics["conf_matrix"])
     kfold_disp.plot()
     plt.savefig(f"generated/graphs/{model_name}-kfold-confusion-matrix.png")
+
+    return {
+        "model_metrics": metrics,
+        "kfold_model_metrics": k_fold_metrics,
+    }
     
     
 
