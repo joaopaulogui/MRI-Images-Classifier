@@ -26,35 +26,43 @@ def evaluate_pipeline(data_dir, num_workers):
     os.makedirs(os.path.dirname("generated/graphs/"), exist_ok=True)
     
 
-    names = []
-    accuracies = []
-    accuracies_kfold = []
+    all_names = []
+    all_metrics = {}
+    all_metrics_kfold = []
 
     for name, setup_fn in models.items():
         metrics = evaluate(test_loader, name, setup_fn)
-        names.append(name)
-        accuracies.append(metrics["model_metrics"]["accuracy"])
-        accuracies_kfold.append(metrics["kfold_model_metrics"]["accuracy"])
+        all_names.append(name)
+
+        for metric, value in metrics["model_metrics"].items():
+            if all_metrics.get(metric) is None:
+                all_metrics[metric] = []
+
+            all_metrics[metric].append(value)
+
+        for metric, value in metrics["kfold_model_metrics"].items():
+            if all_metrics_kfold.get(metric) is None:
+                all_metrics_kfold[metric] = []
+
+            all_metrics_kfold[metric].append(value)
+        
+    
 
     plt.figure(figsize=(8,5))
-    bars = plt.bar(names, accuracies)
 
-    for bar, acc in zip(bars, accuracies):
-        plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.005, f"{acc:.2%}", ha="center", va="bottom")
+    _save_graph(all_names, all_metrics["accuracy"], "Acurácia", "Comparação da acurácia dos modelos", "accuracy-comparison.png")
+    _save_graph(all_names, all_metrics_kfold["accuracy"], "Acurácia", "Comparação da acurácia dos modelos com kfolding", "accuracy-comparison.png")
+    
 
-    plt.ylim(0, 1.1)
-    plt.ylabel("Acurácia")
-    plt.title("Comparação da acurácia dos modelos")
-    plt.savefig("generated/graphs/accuracy-comparison.png")
-
+def _save_graph(names, metrics, label, title, file_name):
     plt.clf()
 
-    kfold_bars = plt.bar(names, accuracies_kfold)
+    bars = plt.bar(names, metrics)
 
-    for bar, acc in zip(kfold_bars, accuracies):
-        plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.005, f"{acc:.2%}", ha="center", va="bottom")
+    for bar, metric in zip(bars, metrics):
+        plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.005, f"{metric:.2%}", ha="center", va="bottom")
 
     plt.ylim(0, 1.1)
-    plt.ylabel("Acurácia")
-    plt.title("Comparação da acurácia dos modelos com kfold")
-    plt.savefig("generated/graphs/kfold-accuracy-comparison.png")
+    plt.ylabel(label)
+    plt.title(title)
+    plt.savefig(f"generated/graphs/${file_name}")
