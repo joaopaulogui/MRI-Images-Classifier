@@ -51,7 +51,7 @@ def evaluate_pipeline(data_dir, num_workers):
     kfold_bars = plt.bar(names, accuracies_kfold)
 
     for bar, acc in zip(kfold_bars, accuracies):
-        plt.text(bar.get_x() + bar.get_width()/2, bar.get_height + 0.005, f"{acc:.2%}", ha="center", va="bottom")
+        plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.005, f"{acc:.2%}", ha="center", va="bottom")
 
     plt.ylim(0, 1)
     plt.ylabel("Acurácia")
