@@ -42,18 +42,19 @@ def evaluate_pipeline(data_dir, num_workers):
     for bar, acc in zip(bars, accuracies):
         plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.005, f"{acc:.2%}", ha="center", va="bottom")
 
-    plt.ylim(0, 1)
+    plt.ylim(0, 1.1)
     plt.ylabel("Acurácia")
     plt.title("Comparação da acurácia dos modelos")
     plt.savefig("generated/graphs/accuracy-comparison.png")
 
+    plt.clf()
 
     kfold_bars = plt.bar(names, accuracies_kfold)
 
     for bar, acc in zip(kfold_bars, accuracies):
         plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.005, f"{acc:.2%}", ha="center", va="bottom")
 
-    plt.ylim(0, 1)
+    plt.ylim(0, 1.1)
     plt.ylabel("Acurácia")
     plt.title("Comparação da acurácia dos modelos com kfold")
     plt.savefig("generated/graphs/kfold-accuracy-comparison.png")
