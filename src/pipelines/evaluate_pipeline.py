@@ -28,7 +28,7 @@ def evaluate_pipeline(data_dir, num_workers):
 
     all_names = []
     all_metrics = {}
-    all_metrics_kfold = []
+    all_metrics_kfold = {}
 
     for name, setup_fn in models.items():
         metrics = evaluate(test_loader, name, setup_fn)
