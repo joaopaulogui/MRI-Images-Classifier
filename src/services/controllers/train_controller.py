@@ -19,32 +19,32 @@ def train_models(train_ds, train_loader, test_loader, config, model_registry):
         for name, fns in model_registry.items():
 
             # ── Treino padrão ──────────────────────────────────────────────────
-            #current_model = None
+            current_model = None
 
-            #for attempt, hp in enumerate(tuning_schedule, 1):
-            #    _print_header(f"{name} | Tentativa {attempt} | epochs={hp['epochs']} | lr={hp['lr']}", log)
+            for attempt, hp in enumerate(tuning_schedule, 1):
+                _print_header(f"{name} | Tentativa {attempt} | epochs={hp['epochs']} | lr={hp['lr']}", log)
 
-            #    start = time.perf_counter()
-            #    model, accuracy = fns["train_fn"](
-            #        train_loader,
-            #        test_loader, 
-            #        config,
-            #        hp["epochs"], 
-            #        hp["lr"], 
-            #        current_model, 
-            #    )
-            #    current_model = model
-            #    _print_elapsed(start, log)
+                start = time.perf_counter()
+                model, accuracy = fns["train_fn"](
+                    train_loader,
+                    test_loader, 
+                    config,
+                    hp["epochs"], 
+                    hp["lr"], 
+                    current_model, 
+                )
+                current_model = model
+                _print_elapsed(start, log)
 
-            #    log(f"  → Acurácia: {accuracy*100:.2f}%")
+                log(f"  → Acurácia: {accuracy*100:.2f}%")
 
-            #    if accuracy >= config.min_accuracy:
-            #        log("  ✓ Acurácia mínima atingida!")
-            #        break
-            #else:
-            #    log(f"  ✗ Acurácia mínima não atingida após {len(tuning_schedule)} tentativas.")
+                if accuracy >= config.min_accuracy:
+                    log("  ✓ Acurácia mínima atingida!")
+                    break
+            else:
+                log(f"  ✗ Acurácia mínima não atingida após {len(tuning_schedule)} tentativas.")
 
-            #_save(model, config.classes, f"generated/{name.lower()}.pth", log)
+            _save(model, config.classes, f"generated/{name.lower()}.pth", log)
 
             # ── Treino com K-Fold ──────────────────────────────────────────────
             current_model = None
