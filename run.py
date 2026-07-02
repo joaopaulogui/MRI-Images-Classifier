@@ -3,7 +3,7 @@ if __name__ == "__main__":
     from src.utils.test_data_augmentations import test_data_augmentation
     from src.pipelines.train_pipeline import train_pipeline
     from src.services.controllers.inference_controller import infere
-    from src.services.controllers.evaluate_controller import evaluate
+    from src.pipelines.evaluate_pipeline import evaluate_pipeline
 
     print("Type 'train' to train the models, 'evaluate' to evaluate the models or 'infere' to infere the result")
     OPERATION = input()
@@ -24,7 +24,7 @@ if __name__ == "__main__":
     if OPERATION == "train":
         train_pipeline(TRAINING_DATA_DIR, TESTING_DATA_DIR, EPOCHS, LEARNING_RATE, MIN_ACCURACY, NUM_WORKERS, VERBOSE, EARLY_STOPPING_PATIENCE, REDUCE_LR_PATIENCE)
     elif OPERATION == "evaluate":
-        evaluate(TESTING_DATA_DIR, NUM_WORKERS)
+        evaluate_pipeline(TESTING_DATA_DIR, NUM_WORKERS)
     elif OPERATION == "infere":
         infere(IMAGE_PATH)
     elif OPERATION == "test_data_augmentation":
