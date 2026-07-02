@@ -9,7 +9,7 @@ if __name__ == "__main__":
     OPERATION = input()
 
     TRAINING_DATA_DIR = "resources/Kaggle/Training"
-    TESTING_DATA_DIR = "resources/Kaggle/Testing"
+    TESTING_DATA_DIR = "resources/Kaggle/Training"
     IMAGE_PATH = "resources/Kaggle/Testing/meningioma_tumor/image.jpg"
 
     EPOCHS = 60

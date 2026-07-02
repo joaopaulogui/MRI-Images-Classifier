@@ -1,34 +1,24 @@
 
 import torch
-from src.services.transforms import get_test_transforms
-from src.services.dataset import get_data_loader
-from src.services.models.squeezenet import setup_squeezenet
-from src.services.models.densenet import setup_densenet
-from src.services.models.resnet import setup_resnet
 from src.services.models.metrics import evaluate_model
+import matplotlib.pyplot as plt
+from sklearn.metrics import ConfusionMatrixDisplay
 
-import torch
-from torchvision import datasets
-
-def evaluate(data_dir, num_workers):
-
-    ds = datasets.ImageFolder(root=data_dir)
-
-    test_transforms = get_test_transforms(224, 224)
-    test_loader = get_data_loader(ds, test_transforms, num_workers=num_workers)
+def evaluate(test_loader, model_name, setup_fn):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    metrics = _eval_model(model_name, f"generated/{model_name.lower()}.pth", setup_fn, test_loader, device)
+    k_fold_metrics = _eval_model(model_name+" With KFold", f"generated/{model_name.lower()}-with-kfold.pth", setup_fn, test_loader, device)
+
+    disp = ConfusionMatrixDisplay(confusion_matrix=metrics["conf_matrix"])
+    disp.plot()
+    plt.savefig(f"generated/graphs/{model_name}-confusion-matrix.png")
     
-    models = {
-        "DenseNet": setup_densenet,
-        "ResNet": setup_resnet,
-        "SqueezeNet": setup_squeezenet,
-    }
-
-    for name, setup_fn in models.items():
-        _eval_model(name, f"generated/{name.lower()}.pth", setup_fn, test_loader, device)
-        _eval_model(name+" With KFold", f"generated/{name.lower()}-with-kfold.pth", setup_fn, test_loader, device)
-
+    kfold_disp = ConfusionMatrixDisplay(confusion_matrix=metrics["conf_matrix"])
+    kfold_disp.plot()
+    plt.savefig(f"generated/graphs/{model_name}-kfold-confusion-matrix.png")
+    
     
 
 def _eval_model(model_name, checkpoint_dir, setup_fn, test_loader, device):
@@ -48,3 +38,5 @@ def _eval_model(model_name, checkpoint_dir, setup_fn, test_loader, device):
                 f"f1: {metrics['f1']*100:.2f}% | "
                 f"sensitivity: {metrics['sensitivity']*100:.2f}% | "
                 f"specificity: {metrics['specificity']*100:.2f}%")
+    
+    return metrics

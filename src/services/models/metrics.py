@@ -33,4 +33,5 @@ def evaluate_model(model, test_loader):
         "specificity": specificity,
         "precision":   precision,
         "f1":          f1,
+        "conf_matrix": conf_matrix
     }
