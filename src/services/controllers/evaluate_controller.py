@@ -40,9 +40,11 @@ def _eval_model(model_name, checkpoint_dir, setup_fn, test_loader, device):
     model.eval()
 
     metrics = evaluate_model(model, test_loader)
-    print(f"{model_name} val accuracy: {metrics['accuracy']*100:.2f}% | "
+    print(f"{model_name} val AUC: {metrics['auc']*100:.2f}% | " 
+                f"accuracy: {metrics['accuracy']*100:.2f}% | "
                 f"precision: {metrics['precision']*100:.2f}% | "
-                f"f1: {metrics['f1']*100:.2f}% | "
+                f"recall: {metrics['recall']*100:.2f}% | "
+                f"f1-score: {metrics['f1']*100:.2f}% | "
                 f"sensitivity: {metrics['sensitivity']*100:.2f}% | "
                 f"specificity: {metrics['specificity']*100:.2f}%")
     
