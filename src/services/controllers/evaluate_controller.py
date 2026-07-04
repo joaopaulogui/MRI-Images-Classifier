@@ -22,9 +22,45 @@ def evaluate(test_loader, model_name, setup_fn):
     }
 
 def evaluate_ensemble(model_setups, test_loader):
-    metrics = ensemble_predict_argmax(model_setups, test_loader)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    best_model_idx = -1
+
+    models = []
+    models_with_kfold = []
+    
+    for name, setup_fn in model_setups.items():
+        if name == "DenseNet": best_model_idx = len(models)
+
+        checkpoint = torch.load(f"generated/{name.lower()}.pth", map_location=device)
+        checkpoint_kfold = torch.load(f"generated/{name.lower()}-with-kfold.pth", map_location=device)
+
+        classes = checkpoint["classes"]
+        num_classes = len(classes)
+
+        model = setup_fn(device, num_classes)
+        model.load_state_dict(checkpoint["model_state_dict"])
+        model.eval()
+
+        model_kfold = setup_fn(device, num_classes)
+        model_kfold.load_state_dict(checkpoint_kfold["model_state_dict"])
+        model_kfold.eval()
+
+        models.append(model)
+        models_with_kfold.append(model_kfold)
+
+    metrics = ensemble_predict_argmax(models, best_model_idx, test_loader)
+    metrics_kfold = ensemble_predict_argmax(models_with_kfold, best_model_idx, test_loader)
 
     print(f"Ensemble val AUC: {metrics['auc']*100:.2f}% | " 
+                f"accuracy: {metrics['accuracy']*100:.2f}% | "
+                f"precision: {metrics['precision']*100:.2f}% | "
+                f"recall: {metrics['recall']*100:.2f}% | "
+                f"f1-score: {metrics['f1']*100:.2f}% | "
+                f"sensitivity: {metrics['sensitivity']*100:.2f}% | "
+                f"specificity: {metrics['specificity']*100:.2f}%")
+
+    print(f"Ensemble with Kfold val AUC: {metrics['auc']*100:.2f}% | " 
                 f"accuracy: {metrics['accuracy']*100:.2f}% | "
                 f"precision: {metrics['precision']*100:.2f}% | "
                 f"recall: {metrics['recall']*100:.2f}% | "

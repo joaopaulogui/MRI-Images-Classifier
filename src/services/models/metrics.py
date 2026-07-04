@@ -52,33 +52,8 @@ def evaluate_model(model, test_loader):
 
 
 
-def ensemble_predict_argmax(model_setups, test_loader):
+def ensemble_predict_argmax(models, best_model_idx, test_loader):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    best_model_idx = -1
-
-    models = []
-    models_with_kfold = []
-
-    
-    for name, setup_fn in model_setups.items():
-        if name == "DenseNet": best_model_idx = len(models)
-
-        checkpoint = torch.load(f"generated/{name.lower()}.pth", map_location=device)
-        checkpoint_kfold = torch.load(f"generated/{name.lower()}-with-kfold.pth", map_location=device)
-
-        classes = checkpoint["classes"]
-        num_classes = len(classes)
-
-        model = setup_fn(device, num_classes)
-        model.load_state_dict(checkpoint["model_state_dict"])
-        model.eval()
-
-        model_kfold = setup_fn(device, num_classes)
-        model_kfold.load_state_dict(checkpoint_kfold["model_state_dict"])
-        model_kfold.eval()
-
-        models.append(model)
-        models_with_kfold.append(model_kfold)
 
     all_final_preds = []
     all_labels = []
