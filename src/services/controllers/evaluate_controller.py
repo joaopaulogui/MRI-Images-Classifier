@@ -16,16 +16,6 @@ def evaluate(test_loader, model_name, setup_fn):
     
     _plot_confusion_matrix(k_fold_metrics["conf_matrix"], kfold_classes, f"{model_name}-kfold-confusion-matrix.png", f"Matriz de confusão do modelo {model_name} com Kfold")
 
-    disp = ConfusionMatrixDisplay(confusion_matrix=metrics["conf_matrix"])
-    disp.plot()
-    plt.title(f"Matriz de confusão do modelo {model_name}")
-    plt.savefig(f"generated/graphs/{model_name}-confusion-matrix.png")
-    
-    kfold_disp = ConfusionMatrixDisplay(confusion_matrix=k_fold_metrics["conf_matrix"])
-    kfold_disp.plot()
-    plt.title(f"Matriz de confusão do modelo {model_name} com Kfold")
-    plt.savefig(f"generated/graphs/{model_name}-kfold-confusion-matrix.png")
-
     return {
         "model_metrics": metrics,
         "kfold_model_metrics": k_fold_metrics,
