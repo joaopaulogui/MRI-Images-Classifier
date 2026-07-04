@@ -8,7 +8,7 @@ from src.services.dataset import get_data_loader
 from src.services.models.squeezenet import setup_squeezenet
 from src.services.models.densenet import setup_densenet
 from src.services.models.resnet import setup_resnet
-from src.services.controllers.evaluate_controller import evaluate
+from src.services.controllers.evaluate_controller import evaluate, evaluate_ensemble
 
 def evaluate_pipeline(data_dir, num_workers):
 
@@ -46,7 +46,7 @@ def evaluate_pipeline(data_dir, num_workers):
 
             all_metrics_kfold[metric].append(value)
         
-    
+    evaluate_ensemble(models, test_loader)
 
     plt.figure(figsize=(8,5))
 
