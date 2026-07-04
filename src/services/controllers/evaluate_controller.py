@@ -93,7 +93,12 @@ def _plot_confusion_matrix(cm, class_names, file_name, title, figsize=(8, 8)):
     ax.text(n + 0.5, n + 0.4, f"{acc_total:.1f}%", ha="center", va="center", color="green", fontweight="bold")
     ax.text(n + 0.5, n + 0.65, f"{erro_total:.1f}%", ha="center", va="center", color="red", fontsize=9)
 
-    filtered_class_names = [name.replace("_tumor", "") for name in class_names if name != "no_tumor"]
+    filtered_class_names = []
+    for name in class_names:
+        if name != "no_tumor":
+            filtered_class_names.append(name)
+        else:
+            filtered_class_names.append(name.replace("_tumor", ""))
 
     # Labels dos eixos
     for i, nome in enumerate(filtered_class_names):
