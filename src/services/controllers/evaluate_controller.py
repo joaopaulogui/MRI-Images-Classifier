@@ -60,13 +60,13 @@ def evaluate_ensemble(model_setups, test_loader):
                 f"sensitivity: {metrics['sensitivity']*100:.2f}% | "
                 f"specificity: {metrics['specificity']*100:.2f}%")
 
-    print(f"Ensemble with Kfold val AUC: {metrics['auc']*100:.2f}% | " 
-                f"accuracy: {metrics['accuracy']*100:.2f}% | "
-                f"precision: {metrics['precision']*100:.2f}% | "
-                f"recall: {metrics['recall']*100:.2f}% | "
-                f"f1-score: {metrics['f1']*100:.2f}% | "
-                f"sensitivity: {metrics['sensitivity']*100:.2f}% | "
-                f"specificity: {metrics['specificity']*100:.2f}%")
+    print(f"Ensemble with Kfold val AUC: {metrics_kfold['auc']*100:.2f}% | " 
+                f"accuracy: {metrics_kfold['accuracy']*100:.2f}% | "
+                f"precision: {metrics_kfold['precision']*100:.2f}% | "
+                f"recall: {metrics_kfold['recall']*100:.2f}% | "
+                f"f1-score: {metrics_kfold['f1']*100:.2f}% | "
+                f"sensitivity: {metrics_kfold['sensitivity']*100:.2f}% | "
+                f"specificity: {metrics_kfold['specificity']*100:.2f}%")
 
 def _eval_model(model_name, checkpoint_dir, setup_fn, test_loader, device):
     checkpoint = torch.load(checkpoint_dir, map_location=device)
