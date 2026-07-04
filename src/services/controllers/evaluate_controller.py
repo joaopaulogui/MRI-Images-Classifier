@@ -62,7 +62,7 @@ def _plot_confusion_matrix(cm, class_names, file_name, title, figsize=(8, 8)):
             valor = cm[i, j]
             pct = valor / total * 100
             cor = "#b1dcc0" if i == j else "#ffc7bf"  # verde na diagonal, vermelho fora
-            ax.add_patch(plt.Rectangle((j, i), 1, 1, facecolor=cor, edgecolor="white"))
+            ax.add_patch(plt.Rectangle((j, i), 1, 1, facecolor=cor, edgecolor="black", linewidth=0.5))
             ax.text(j + 0.5, i + 0.4, f"{valor}", ha="center", va="center", fontweight="bold")
             ax.text(j + 0.5, i + 0.65, f"{pct:.1f}%", ha="center", va="center", fontsize=9)
 
@@ -72,7 +72,7 @@ def _plot_confusion_matrix(cm, class_names, file_name, title, figsize=(8, 8)):
         total_linha = cm[i, :].sum()
         recall = acertos / total_linha * 100 if total_linha > 0 else 0
         erro = 100 - recall
-        ax.add_patch(plt.Rectangle((n, i), 1, 1, facecolor="#efefef", edgecolor="white"))
+        ax.add_patch(plt.Rectangle((n, i), 1, 1, facecolor="#efefef", edgecolor="black", linewidth=0.5))
         ax.text(n + 0.5, i + 0.4, f"{recall:.1f}%", ha="center", va="center", color="green", fontweight="bold")
         ax.text(n + 0.5, i + 0.65, f"{erro:.1f}%", ha="center", va="center", color="red", fontsize=9)
 
@@ -82,7 +82,7 @@ def _plot_confusion_matrix(cm, class_names, file_name, title, figsize=(8, 8)):
         total_coluna = cm[:, j].sum()
         precision = acertos / total_coluna * 100 if total_coluna > 0 else 0
         erro = 100 - precision
-        ax.add_patch(plt.Rectangle((j, n), 1, 1, facecolor="#efefef", edgecolor="white"))
+        ax.add_patch(plt.Rectangle((j, n), 1, 1, facecolor="#efefef", edgecolor="black", linewidth=0.5))
         ax.text(j + 0.5, n + 0.4, f"{precision:.1f}%", ha="center", va="center", color="green", fontweight="bold")
         ax.text(j + 0.5, n + 0.65, f"{erro:.1f}%", ha="center", va="center", color="red", fontsize=9)
 

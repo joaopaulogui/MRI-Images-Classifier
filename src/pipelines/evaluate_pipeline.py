@@ -69,7 +69,7 @@ def _save_graph(names, metrics, label, title, file_name):
     plt.clf()
 
     colors = ["#3a3aec", "#F15912", "#F1D018", "#AD0E98"]
-    bars = plt.bar(names, metrics, colors=colors)
+    bars = plt.bar(names, metrics, color=colors)
 
     for bar, metric in zip(bars, metrics):
         plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.005, f"{metric:.2%}", ha="center", va="bottom")
