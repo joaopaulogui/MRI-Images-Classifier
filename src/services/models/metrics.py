@@ -1,5 +1,6 @@
 import torch
 import torch.nn.functional as F
+from collections import Counter
 from sklearn.metrics import accuracy_score, precision_score, f1_score, confusion_matrix, recall_score, roc_auc_score
 
 def evaluate_model(model, test_loader):
@@ -37,6 +38,101 @@ def evaluate_model(model, test_loader):
         auc = roc_auc_score(all_labels, [p[1] for p in all_probs])
     else:
         auc = roc_auc_score(all_labels, all_probs, multi_class="ovr", average="macro")
+
+    return {
+        "accuracy": accuracy,
+        "sensitivity": sensitivity,
+        "specificity": specificity,
+        "precision": precision,
+        "recall": recall,
+        "f1": f1,
+        "auc": auc,
+        "conf_matrix": conf_matrix,
+    }
+
+
+
+def ensemble_predict_argmax(model_setups, test_loader):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    best_model_idx = -1
+
+    models = []
+    models_with_kfold = []
+
+    
+    for name, setup_fn in model_setups.items():
+        if name == "DenseNet": best_model_idx = len(models)
+
+        checkpoint = torch.load(f"generated/{name.lower()}.pth", map_location=device)
+        checkpoint_kfold = torch.load(f"generated/{name.lower()}-with-kfold.pth", map_location=device)
+
+        classes = checkpoint["classes"]
+        num_classes = len(classes)
+
+        model = setup_fn(device, num_classes)
+        model.load_state_dict(checkpoint["model_state_dict"])
+        model.eval()
+
+        model_kfold = setup_fn(device, num_classes)
+        model_kfold.load_state_dict(checkpoint_kfold["model_state_dict"])
+        model_kfold.eval()
+
+        models.append(model)
+        models_with_kfold.append(model_kfold)
+
+    all_final_preds = []
+    all_labels = []
+    all_avg_probs = []
+
+    with torch.no_grad():
+        for images, labels in test_loader:
+            images, labels = images.to(device), labels.to(device)
+
+            batch_preds_per_model = []
+            batch_probs_per_model = []
+            for model in models:
+                guesses = model(images)
+                probs = F.softmax(guesses, dim=1)
+                preds = guesses.argmax(dim=1)
+
+                batch_preds_per_model.append(preds.cpu())
+                batch_probs_per_model.append(probs.cpu())
+
+            batch_preds_per_model = torch.stack(batch_preds_per_model, dim=1)
+            batch_probs_per_model = torch.stack(batch_probs_per_model, dim=1)
+
+            avg_probs = batch_probs_per_model.mean(dim=1)
+            all_avg_probs.append(avg_probs)
+
+            for sample_preds in batch_preds_per_model:
+                votes = Counter(sample_preds.tolist())
+                most_common = votes.most_common()
+
+                if most_common[0][1] > 1:
+                    final_class = most_common[0][0]
+                else:
+                    final_class = sample_preds[best_model_idx].item()
+
+                all_final_preds.append(final_class)
+
+            all_labels.extend(labels.tolist())
+    
+    all_avg_probs = torch.cat(all_avg_probs, dim=0).numpy()
+    
+    accuracy = accuracy_score(all_labels, all_final_preds)
+    precision = precision_score(all_labels, all_final_preds, average="macro", zero_division=0)
+    recall = recall_score(all_labels, all_final_preds, average="macro", zero_division=0)
+    f1 = f1_score(all_labels, all_final_preds, average="macro", zero_division=0)
+
+    conf_matrix = confusion_matrix(all_labels, all_final_preds)
+    sensitivity = (conf_matrix.diagonal() / conf_matrix.sum(axis=1)).mean()
+    specificity = (conf_matrix.diagonal() / conf_matrix.sum(axis=0)).mean()
+
+    num_classes = len(set(all_labels))
+    if num_classes == 2:
+        auc = roc_auc_score(all_labels, [p[1] for p in all_avg_probs])
+    else:
+        auc = roc_auc_score(all_labels, all_avg_probs, multi_class="ovr", average="macro")
 
     return {
         "accuracy": accuracy,

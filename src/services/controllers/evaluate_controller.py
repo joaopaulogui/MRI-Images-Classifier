@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import ConfusionMatrixDisplay
-from src.services.models.metrics import evaluate_model
+from src.services.models.metrics import evaluate_model, ensemble_predict_argmax
 
 def evaluate(test_loader, model_name, setup_fn):
 
@@ -20,8 +20,17 @@ def evaluate(test_loader, model_name, setup_fn):
         "model_metrics": metrics,
         "kfold_model_metrics": k_fold_metrics,
     }
-    
-    
+
+def evaluate_ensemble(model_setups, test_loader):
+    metrics = ensemble_predict_argmax(model_setups, test_loader)
+
+    print(f"Ensemble val AUC: {metrics['auc']*100:.2f}% | " 
+                f"accuracy: {metrics['accuracy']*100:.2f}% | "
+                f"precision: {metrics['precision']*100:.2f}% | "
+                f"recall: {metrics['recall']*100:.2f}% | "
+                f"f1-score: {metrics['f1']*100:.2f}% | "
+                f"sensitivity: {metrics['sensitivity']*100:.2f}% | "
+                f"specificity: {metrics['specificity']*100:.2f}%")
 
 def _eval_model(model_name, checkpoint_dir, setup_fn, test_loader, device):
     checkpoint = torch.load(checkpoint_dir, map_location=device)
