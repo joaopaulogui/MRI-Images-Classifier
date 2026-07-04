@@ -50,9 +50,19 @@ def evaluate_pipeline(data_dir, num_workers):
 
     plt.figure(figsize=(8,5))
 
+    _save_graph(all_names, all_metrics["auc"], "AUC", "Comparação da AUC dos modelos", "auc-comparison.png")
     _save_graph(all_names, all_metrics["accuracy"], "Acurácia", "Comparação da acurácia dos modelos", "accuracy-comparison.png")
+    _save_graph(all_names, all_metrics["precision"], "Precisão", "Comparação da precisão dos modelos", "precision-comparison.png")
+    _save_graph(all_names, all_metrics["recall"], "Sensibilidade", "Comparação da sensibilidade dos modelos", "recall-comparison.png")
+    _save_graph(all_names, all_metrics["f1"], "F1-score", "Comparação do F1-score dos modelos", "f1-score-comparison.png")
+    _save_graph(all_names, all_metrics["specificity"], "Especificidade", "Comparação da especificidade dos modelos", "specificity-comparison.png")
     
-    _save_graph(all_names, all_metrics_kfold["accuracy"], "Acurácia", "Comparação da acurácia dos modelos com kfold", "kfold_accuracy-comparison.png")
+    _save_graph(all_names, all_metrics_kfold["auc"], "AUC", "Comparação da AUC dos modelos com Kfold", "kfold_auc-comparison.png")
+    _save_graph(all_names, all_metrics_kfold["accuracy"], "Acurácia", "Comparação da acurácia dos modelos com Kfold", "kfold_accuracy-comparison.png")
+    _save_graph(all_names, all_metrics_kfold["precision"], "Precisão", "Comparação da precisão dos modelos com Kfold", "kfold_precision-comparison.png")
+    _save_graph(all_names, all_metrics_kfold["recall"], "Sensibilidade", "Comparação da sensibilidade dos modelos com Kfold", "kfold_recall-comparison.png")
+    _save_graph(all_names, all_metrics_kfold["f1"], "F1-score", "Comparação do F1-score dos modelos com Kfold", "kfold_f1-score-comparison.png")
+    _save_graph(all_names, all_metrics_kfold["specificity"], "Especificidade", "Comparação da especificidade dos modelos com Kfold", "kfold_specificity-comparison.png")
     
 
 def _save_graph(names, metrics, label, title, file_name):

@@ -12,7 +12,9 @@ def evaluate(test_loader, model_name, setup_fn):
     metrics, classes = _eval_model(model_name, f"generated/{model_name.lower()}.pth", setup_fn, test_loader, device)
     k_fold_metrics, kfold_classes = _eval_model(model_name+" With KFold", f"generated/{model_name.lower()}-with-kfold.pth", setup_fn, test_loader, device)
 
-    plot_confusion_matrix(metrics["conf_matrix"], classes)
+    _plot_confusion_matrix(metrics["conf_matrix"], classes, f"{model_name}-confusion-matrix.png", f"Matriz de confusão do modelo {model_name}")
+    
+    _plot_confusion_matrix(k_fold_metrics["conf_matrix"], kfold_classes, f"{model_name}-kfold-confusion-matrix.png", f"Matriz de confusão do modelo {model_name} com Kfold")
 
     disp = ConfusionMatrixDisplay(confusion_matrix=metrics["conf_matrix"])
     disp.plot()
@@ -53,11 +55,12 @@ def _eval_model(model_name, checkpoint_dir, setup_fn, test_loader, device):
     
     return metrics, classes
 
-def plot_confusion_matrix(cm, class_names, figsize=(8, 8)):
+def _plot_confusion_matrix(cm, class_names, file_name, title, figsize=(8, 8)):
     n = len(class_names)
     total = cm.sum()
 
     fig, ax = plt.subplots(figsize=figsize)
+    ax.set_aspect("equal")
     ax.set_xlim(0, n + 1)
     ax.set_ylim(0, n + 1)
     ax.invert_yaxis()
@@ -68,7 +71,7 @@ def plot_confusion_matrix(cm, class_names, figsize=(8, 8)):
         for j in range(n):
             valor = cm[i, j]
             pct = valor / total * 100
-            cor = "#90EE90" if i == j else "#F4A9A0"  # verde na diagonal, vermelho fora
+            cor = "#b1dcc0" if i == j else "#ffc7bf"  # verde na diagonal, vermelho fora
             ax.add_patch(plt.Rectangle((j, i), 1, 1, facecolor=cor, edgecolor="white"))
             ax.text(j + 0.5, i + 0.4, f"{valor}", ha="center", va="center", fontweight="bold")
             ax.text(j + 0.5, i + 0.65, f"{pct:.1f}%", ha="center", va="center", fontsize=9)
@@ -79,7 +82,7 @@ def plot_confusion_matrix(cm, class_names, figsize=(8, 8)):
         total_linha = cm[i, :].sum()
         recall = acertos / total_linha * 100 if total_linha > 0 else 0
         erro = 100 - recall
-        ax.add_patch(plt.Rectangle((n, i), 1, 1, facecolor="#E8E8E8", edgecolor="white"))
+        ax.add_patch(plt.Rectangle((n, i), 1, 1, facecolor="#efefef", edgecolor="white"))
         ax.text(n + 0.5, i + 0.4, f"{recall:.1f}%", ha="center", va="center", color="green", fontweight="bold")
         ax.text(n + 0.5, i + 0.65, f"{erro:.1f}%", ha="center", va="center", color="red", fontsize=9)
 
@@ -89,24 +92,27 @@ def plot_confusion_matrix(cm, class_names, figsize=(8, 8)):
         total_coluna = cm[:, j].sum()
         precision = acertos / total_coluna * 100 if total_coluna > 0 else 0
         erro = 100 - precision
-        ax.add_patch(plt.Rectangle((j, n), 1, 1, facecolor="#E8E8E8", edgecolor="white"))
+        ax.add_patch(plt.Rectangle((j, n), 1, 1, facecolor="#efefef", edgecolor="white"))
         ax.text(j + 0.5, n + 0.4, f"{precision:.1f}%", ha="center", va="center", color="green", fontweight="bold")
         ax.text(j + 0.5, n + 0.65, f"{erro:.1f}%", ha="center", va="center", color="red", fontsize=9)
 
     # Célula do canto (acurácia total)
     acc_total = np.trace(cm) / total * 100
     erro_total = 100 - acc_total
-    ax.add_patch(plt.Rectangle((n, n), 1, 1, facecolor="white", edgecolor="black"))
+    ax.add_patch(plt.Rectangle((n, n), 1, 1, facecolor="#d6d6d6", edgecolor="black", linewidth=0.5))
     ax.text(n + 0.5, n + 0.4, f"{acc_total:.1f}%", ha="center", va="center", color="green", fontweight="bold")
     ax.text(n + 0.5, n + 0.65, f"{erro_total:.1f}%", ha="center", va="center", color="red", fontsize=9)
 
+    filtered_class_names = [name.replace("_tumor", "") for name in class_names if name != "no_tumor"]
+
     # Labels dos eixos
-    for i, nome in enumerate(class_names):
+    for i, nome in enumerate(filtered_class_names):
         ax.text(-0.1, i + 0.5, nome, ha="right", va="center", fontweight="bold")
         ax.text(i + 0.5, n + 1.15, nome, ha="center", va="center", fontweight="bold")
 
     ax.text((n) / 2, -0.3, "Predicted Class", ha="center", fontsize=11)
     fig.text(0.02, 0.5, "True Class", va="center", rotation="vertical", fontsize=11)
 
+    plt.title(title)
     plt.tight_layout()
-    plt.savefig("generated/graphs/confusion_matrix_estilo.png", dpi=150, bbox_inches="tight")
+    plt.savefig(f"generated/graphs/{file_name}", dpi=150, bbox_inches="tight")
