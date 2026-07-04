@@ -51,8 +51,8 @@ def _plot_confusion_matrix(cm, class_names, file_name, title, figsize=(8, 8)):
 
     fig, ax = plt.subplots(figsize=figsize)
     ax.set_aspect("equal")
-    ax.set_xlim(0, n + 1)
-    ax.set_ylim(0, n + 1)
+    ax.set_xlim(0, n + 1.5)
+    ax.set_ylim(0, n + 1.5)
     ax.invert_yaxis()
     ax.axis("off")
 
@@ -102,6 +102,9 @@ def _plot_confusion_matrix(cm, class_names, file_name, title, figsize=(8, 8)):
 
     ax.text((n) / 2, -0.3, "Predicted Class", ha="center", fontsize=11)
     fig.text(0.02, 0.5, "True Class", va="center", rotation="vertical", fontsize=11)
+
+    ax.plot([n, n], [0, n + 1], color="black", linewidth=2, zorder=10)
+    ax.plot([0, n + 1], [n, n], color="black", linewidth=2, zorder=10)
 
     plt.title(title)
     plt.tight_layout()
