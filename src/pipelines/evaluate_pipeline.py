@@ -51,7 +51,8 @@ def evaluate_pipeline(data_dir, num_workers):
     plt.figure(figsize=(8,5))
 
     _save_graph(all_names, all_metrics["accuracy"], "Acurácia", "Comparação da acurácia dos modelos", "accuracy-comparison.png")
-    _save_graph(all_names, all_metrics_kfold["accuracy"], "Acurácia", "Comparação da acurácia dos modelos com kfolding", "accuracy-comparison.png")
+    
+    _save_graph(all_names, all_metrics_kfold["accuracy"], "Acurácia", "Comparação da acurácia dos modelos com kfold", "kfold_accuracy-comparison.png")
     
 
 def _save_graph(names, metrics, label, title, file_name):
@@ -65,4 +66,4 @@ def _save_graph(names, metrics, label, title, file_name):
     plt.ylim(0, 1.1)
     plt.ylabel(label)
     plt.title(title)
-    plt.savefig(f"generated/graphs/${file_name}")
+    plt.savefig(f"generated/graphs/{file_name}")

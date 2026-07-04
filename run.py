@@ -13,7 +13,7 @@ if __name__ == "__main__":
     IMAGE_PATH = "resources/Kaggle/Testing/meningioma_tumor/image.jpg"
 
     EPOCHS = 60
-    LEARNING_RATE = 0.001
+    LEARNING_RATE = 0.00001
     MIN_ACCURACY = 0.9
     EARLY_STOPPING_PATIENCE = 20
     REDUCE_LR_PATIENCE = 7
