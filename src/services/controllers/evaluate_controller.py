@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import ConfusionMatrixDisplay
-from src.services.models.metrics import evaluate_model, ensemble_predict_argmax
+from src.services.models.metrics import evaluate_model, ensemble_predict_argmax, ensemble_predict_soft
 
 def evaluate(test_loader, model_name, setup_fn):
 
@@ -50,23 +50,22 @@ def evaluate_ensemble(model_setups, test_loader):
         models_with_kfold.append(model_kfold)
 
     metrics = ensemble_predict_argmax(models, best_model_idx, test_loader)
+    _print_metrics("Ensemble", metrics)
+
     metrics_kfold = ensemble_predict_argmax(models_with_kfold, best_model_idx, test_loader)
+    _print_metrics("Ensemble with Kfold", metrics_kfold)
 
-    print(f"Ensemble val AUC: {metrics['auc']*100:.2f}% | " 
-                f"accuracy: {metrics['accuracy']*100:.2f}% | "
-                f"precision: {metrics['precision']*100:.2f}% | "
-                f"recall: {metrics['recall']*100:.2f}% | "
-                f"f1-score: {metrics['f1']*100:.2f}% | "
-                f"sensitivity: {metrics['sensitivity']*100:.2f}% | "
-                f"specificity: {metrics['specificity']*100:.2f}%")
+    metrics_soft = ensemble_predict_soft(models, test_loader)
+    _print_metrics("Soft Ensemble", metrics_soft)
 
-    print(f"Ensemble with Kfold val AUC: {metrics_kfold['auc']*100:.2f}% | " 
-                f"accuracy: {metrics_kfold['accuracy']*100:.2f}% | "
-                f"precision: {metrics_kfold['precision']*100:.2f}% | "
-                f"recall: {metrics_kfold['recall']*100:.2f}% | "
-                f"f1-score: {metrics_kfold['f1']*100:.2f}% | "
-                f"sensitivity: {metrics_kfold['sensitivity']*100:.2f}% | "
-                f"specificity: {metrics_kfold['specificity']*100:.2f}%")
+    metrics_soft_kfold = ensemble_predict_soft(models_with_kfold, test_loader)
+    _print_metrics("Soft Ensemble with Kfold", metrics_soft_kfold)
+
+    metrics_weighted_soft = ensemble_predict_soft(models, test_loader)
+    _print_metrics("Weighted Soft Ensemble", metrics_weighted_soft)
+
+    metrics_weighted_soft_kfold = ensemble_predict_soft(models_with_kfold, test_loader)
+    _print_metrics("Weighted Soft Ensemble with Kfold", metrics_weighted_soft_kfold)
 
 def _eval_model(model_name, checkpoint_dir, setup_fn, test_loader, device):
     checkpoint = torch.load(checkpoint_dir, map_location=device)
@@ -80,15 +79,18 @@ def _eval_model(model_name, checkpoint_dir, setup_fn, test_loader, device):
     model.eval()
 
     metrics = evaluate_model(model, test_loader)
-    print(f"{model_name} val AUC: {metrics['auc']*100:.2f}% | " 
+    _print_metrics(model_name, metrics)
+    
+    return metrics, classes
+
+def _print_metrics(name, metrics):
+    print(f"{name} val AUC: {metrics['auc']*100:.2f}% | " 
                 f"accuracy: {metrics['accuracy']*100:.2f}% | "
                 f"precision: {metrics['precision']*100:.2f}% | "
                 f"recall: {metrics['recall']*100:.2f}% | "
                 f"f1-score: {metrics['f1']*100:.2f}% | "
                 f"sensitivity: {metrics['sensitivity']*100:.2f}% | "
                 f"specificity: {metrics['specificity']*100:.2f}%")
-    
-    return metrics, classes
 
 def _plot_confusion_matrix(cm, class_names, file_name, title, figsize=(8, 8)):
     n = len(class_names)
