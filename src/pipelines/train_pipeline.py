@@ -8,6 +8,7 @@ from src.services.transforms import get_test_transforms, get_train_transforms
 from src.services.models.densenet import train_densenet, train_densenet_kfold
 from src.services.models.resnet import train_resnet, train_resnet_kfold
 from src.services.models.squeezenet import train_squeezenet, train_squeezenet_kfold
+from src.services.models.convnext import train_convnext, train_convnext_kfold
 from src.config import TrainingConfig
 from src.utils.logger import Logger
 from src.services.controllers.train_controller import train_models
@@ -59,9 +60,10 @@ def train_pipeline(train_data_dir, test_data_dir, epochs, lr, min_accuracy, num_
     )
 
     model_registry = {
-        "DenseNet":   {"train_fn": train_densenet,   "train_kfold_fn": train_densenet_kfold},
-        "ResNet":     {"train_fn": train_resnet,     "train_kfold_fn": train_resnet_kfold},
-        "SqueezeNet": {"train_fn": train_squeezenet, "train_kfold_fn": train_squeezenet_kfold},
+        #"DenseNet":   {"train_fn": train_densenet,   "train_kfold_fn": train_densenet_kfold},
+        #"ResNet":     {"train_fn": train_resnet,     "train_kfold_fn": train_resnet_kfold},
+        #"SqueezeNet": {"train_fn": train_squeezenet, "train_kfold_fn": train_squeezenet_kfold},
+        "ConvNeXt": {"train_fn": train_convnext, "train_kfold_fn": train_convnext_kfold},
     }
 
     train_models(train_ds, train_loader, test_loader, config, model_registry)
