@@ -61,10 +61,10 @@ def evaluate_ensemble(model_setups, test_loader):
     metrics_soft_kfold = ensemble_predict_soft(models_with_kfold, test_loader)
     _print_metrics("Soft Ensemble with Kfold", metrics_soft_kfold)
 
-    metrics_weighted_soft = ensemble_predict_soft(models, test_loader)
+    metrics_weighted_soft = ensemble_predict_soft(models, test_loader, weighted=True, best_model_idx=best_model_idx)
     _print_metrics("Weighted Soft Ensemble", metrics_weighted_soft)
 
-    metrics_weighted_soft_kfold = ensemble_predict_soft(models_with_kfold, test_loader)
+    metrics_weighted_soft_kfold = ensemble_predict_soft(models_with_kfold, test_loader, weighted=True, best_model_idx=best_model_idx)
     _print_metrics("Weighted Soft Ensemble with Kfold", metrics_weighted_soft_kfold)
 
 def _eval_model(model_name, checkpoint_dir, setup_fn, test_loader, device):
