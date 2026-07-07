@@ -8,6 +8,7 @@ from src.services.dataset import get_data_loader
 from src.services.models.squeezenet import setup_squeezenet
 from src.services.models.densenet import setup_densenet
 from src.services.models.resnet import setup_resnet
+from src.services.models.convnext import setup_convnext
 from src.services.controllers.evaluate_controller import evaluate, evaluate_ensemble
 
 def evaluate_pipeline(data_dir, num_workers):
@@ -21,6 +22,7 @@ def evaluate_pipeline(data_dir, num_workers):
         "DenseNet": setup_densenet,
         "ResNet": setup_resnet,
         "SqueezeNet": setup_squeezenet,
+        "ConvNeXt": setup_convnext,
     }
 
     os.makedirs(os.path.dirname("generated/graphs/"), exist_ok=True)
