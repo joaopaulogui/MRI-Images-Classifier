@@ -21,7 +21,7 @@ def evaluate_pipeline(data_dir, num_workers):
     models = {
         "DenseNet": setup_densenet,
         "ResNet": setup_resnet,
-        "SqueezeNet": setup_squeezenet,
+        #"SqueezeNet": setup_squeezenet,
         "ConvNeXt": setup_convnext,
     }
 
