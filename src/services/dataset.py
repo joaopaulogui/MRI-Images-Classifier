@@ -1,4 +1,6 @@
 import torch
+import os
+import shutil
 from torchvision import datasets
 from torch.utils.data import Dataset, DataLoader, random_split
 import numpy as np
@@ -35,6 +37,19 @@ def get_subsets(data_dir: str, test_split: float=0.2):
         [train_size, test_size], 
         generator=torch.Generator().manual_seed(42)
     )
+
+    for idx in test_subset.indices:
+        old_path, class_id = ds.samples[idx]
+
+        class_name = ds.classes[class_id]
+
+        new_folder_name = os.path.join("resources/Kaggle/Testing", class_name)
+        os.makedirs(new_folder_name, exist_ok=True)
+
+        file_name = os.path.basename(old_path)
+        new_path = os.path.join(new_folder_name, file_name)
+
+        shutil.copy(old_path, new_path)
 
     return train_subset, test_subset, ds.classes
 
