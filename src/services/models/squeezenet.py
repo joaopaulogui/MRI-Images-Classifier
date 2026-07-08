@@ -30,7 +30,7 @@ def setup_squeezenet(device, num_classes):
         param.requires_grad = False
 
     #Unreeze last features for better learning
-    for param in squeezenet.features[-3:].parameters(): #if it stops learning decrease to [-3:]
+    for param in squeezenet.features[-6:].parameters(): #if it stops learning decrease to [-3:]
         param.requires_grad = True
 
     num_in_channels = squeezenet.classifier[1].in_channels
