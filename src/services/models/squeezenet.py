@@ -35,7 +35,12 @@ def setup_squeezenet(device, num_classes):
 
     num_in_channels = squeezenet.classifier[1].in_channels
 
-    squeezenet.classifier[1] = nn.Conv2d(num_in_channels, num_classes, kernel_size=(1, 1))
+    squeezenet.classifier[1] = nn.Sequential(
+        nn.Conv2d(num_in_channels, 512, kernel_size=(1, 1)),
+        nn.BatchNorm1d(512),
+        nn.ReLU(inplace=True),
+        nn.Conv2d(512, num_classes, kernel_size=(1, 1)),
+    )
 
     squeezenet = squeezenet.to(device)
 
