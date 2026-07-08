@@ -18,7 +18,6 @@ def train_models(train_ds, train_loader, test_loader, config, model_registry):
 
         for name, fns in model_registry.items():
 
-            # ── Treino padrão ──────────────────────────────────────────────────
             current_model = None
 
             for attempt, hp in enumerate(tuning_schedule, 1):
@@ -46,7 +45,6 @@ def train_models(train_ds, train_loader, test_loader, config, model_registry):
 
             _save(model, config.classes, f"generated/{name.lower()}.pth", log)
 
-            # ── Treino com K-Fold ──────────────────────────────────────────────
             current_model = None
 
             for attempt, hp in enumerate(tuning_schedule, 1):
@@ -74,8 +72,6 @@ def train_models(train_ds, train_loader, test_loader, config, model_registry):
 
             _save(model_kfold, config.classes, f"generated/{name.lower()}-with-kfold.pth", log)
 
-
-# ─── Helpers ──────────────────────────────────────────────────────────────────
 
 def _print_header(title: str, log=print):
     log(f"\n{'='*55}")

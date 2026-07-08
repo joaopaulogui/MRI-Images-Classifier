@@ -9,28 +9,20 @@ from src.services.models.trainer import train_loop, train_kfold
 from src.services.models.metrics import evaluate_model
 
 def setup_convnext(device, num_classes, variant="tiny"):
-    """
-    Carrega ConvNeXt pré-treinada (ImageNet) e prepara para fine-tuning.
-    variant: "tiny", "small", "base", "large".
-    """
     builder = getattr(models, f"convnext_{variant}")
     weights_enum = getattr(models, f"ConvNeXt_{variant.capitalize()}_Weights")
     convnext = builder(weights=weights_enum.DEFAULT)
 
-    # Congela tudo primeiro
     for param in convnext.parameters():
         param.requires_grad = False
 
-    # Descongela o último estágio (mais capacidade de adaptação)
     for param in convnext.features[-1].parameters():
         param.requires_grad = True
 
-    # Cabeça classificadora com Dropout para regularização
-    # (classifier original: LayerNorm2d -> Flatten -> Linear)
     num_in_features = convnext.classifier[2].in_features
     convnext.classifier = nn.Sequential(
-        convnext.classifier[0],   # mantém o LayerNorm2d original
-        convnext.classifier[1],   # mantém o Flatten original
+        convnext.classifier[0],   
+        convnext.classifier[1],   
         nn.Linear(num_in_features, 512),
         nn.BatchNorm1d(512),
         nn.ReLU(inplace=True),
@@ -42,11 +34,6 @@ def setup_convnext(device, num_classes, variant="tiny"):
 
 
 def _build_optimizer(model, lr):
-    """
-    Otimizador com grupos de LR diferenciados por profundidade.
-    - último estágio (features[-1]): LR baixo
-    - classifier: LR normal
-    """
     base_model = model.module if isinstance(model, nn.DataParallel) else model
 
     return optim.Adam(

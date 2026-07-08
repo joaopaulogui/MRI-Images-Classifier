@@ -24,7 +24,6 @@ for i in range(1, 3065):
 
         image = image.astype(np.float32)
 
-        # Ignora os 1% mais escuros e mais brilhantes (outliers)
         p_low  = np.percentile(image, 1)
         p_high = np.percentile(image, 99)
         image = np.clip(image, p_low, p_high)

@@ -6,10 +6,6 @@ from src.services.models.trainer import train_loop, train_kfold
 from src.services.models.metrics import evaluate_model
 
 def _build_optimizer(model, lr):
-    """
-    Otimizador com grupos de LR diferenciados por profundidade.
-    - classifier: LR normal
-    """
 
     base_model = model.module if isinstance(model, nn.DataParallel) else model
 
@@ -25,12 +21,10 @@ def setup_squeezenet(device, num_classes):
 
     squeezenet = models.squeezenet1_1(weights=models.SqueezeNet1_1_Weights.DEFAULT)
 
-    #Freeze parameters for Transfer Learning
     for param in squeezenet.parameters():
         param.requires_grad = False
 
-    #Unreeze last features for better learning
-    for param in squeezenet.features[-3:].parameters(): #if it stops learning decrease to [-3:]
+    for param in squeezenet.features[-3:].parameters(): 
         param.requires_grad = True
 
     num_in_channels = squeezenet.classifier[1].in_channels

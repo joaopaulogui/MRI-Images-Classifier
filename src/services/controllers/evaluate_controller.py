@@ -103,17 +103,15 @@ def _plot_confusion_matrix(cm, class_names, file_name, title, figsize=(8, 8)):
     ax.invert_yaxis()
     ax.axis("off")
 
-    # Células principais da matriz
     for i in range(n):
         for j in range(n):
             valor = cm[i, j]
             pct = valor / total * 100
-            cor = "#b1dcc0" if i == j else "#ffc7bf"  # verde na diagonal, vermelho fora
+            cor = "#b1dcc0" if i == j else "#ffc7bf"  
             ax.add_patch(plt.Rectangle((j, i), 1, 1, facecolor=cor, edgecolor="black", linewidth=0.5))
             ax.text(j + 0.5, i + 0.4, f"{valor}", ha="center", va="center", fontweight="bold")
             ax.text(j + 0.5, i + 0.65, f"{pct:.1f}%", ha="center", va="center", fontsize=9)
 
-    # Coluna de recall (à direita)
     for i in range(n):
         acertos = cm[i, i]
         total_linha = cm[i, :].sum()
@@ -123,7 +121,6 @@ def _plot_confusion_matrix(cm, class_names, file_name, title, figsize=(8, 8)):
         ax.text(n + 0.5, i + 0.4, f"{recall:.1f}%", ha="center", va="center", color="green", fontweight="bold")
         ax.text(n + 0.5, i + 0.65, f"{erro:.1f}%", ha="center", va="center", color="red", fontsize=9)
 
-    # Linha de precisão (embaixo)
     for j in range(n):
         acertos = cm[j, j]
         total_coluna = cm[:, j].sum()
@@ -133,7 +130,6 @@ def _plot_confusion_matrix(cm, class_names, file_name, title, figsize=(8, 8)):
         ax.text(j + 0.5, n + 0.4, f"{precision:.1f}%", ha="center", va="center", color="green", fontweight="bold")
         ax.text(j + 0.5, n + 0.65, f"{erro:.1f}%", ha="center", va="center", color="red", fontsize=9)
 
-    # Célula do canto (acurácia total)
     acc_total = np.trace(cm) / total * 100
     erro_total = 100 - acc_total
     ax.add_patch(plt.Rectangle((n, n), 1, 1, facecolor="#d6d6d6", edgecolor="black", linewidth=0.5))
@@ -147,7 +143,6 @@ def _plot_confusion_matrix(cm, class_names, file_name, title, figsize=(8, 8)):
         else:
             filtered_class_names.append(name.replace("_", " "))
 
-    # Labels dos eixos
     for i, nome in enumerate(filtered_class_names):
         ax.text(-0.1, i + 0.5, nome, ha="right", va="center", fontweight="bold")
         ax.text(i + 0.5, n + 1.15, nome, ha="center", va="center", fontweight="bold")

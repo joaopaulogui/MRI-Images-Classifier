@@ -8,12 +8,6 @@ from src.services.models.trainer import train_loop, train_kfold
 from src.services.models.metrics import evaluate_model
 
 def _build_optimizer(model, lr):
-    """
-    Otimizador com grupos de LR diferenciados por profundidade.
-    - transition3: LR muito baixo (features já bem treinadas)
-    - denseblock4: LR baixo
-    - classifier: LR normal
-    """
 
     base_model = model.module if isinstance(model, nn.DataParallel) else model
 
@@ -29,11 +23,9 @@ def setup_resnet(device, num_classes):
 
     resnet = models.resnet101(weights=models.ResNet101_Weights.DEFAULT)
 
-    #Freeze parameters for Transfer Learning
     for param in resnet.parameters():
         param.requires_grad = False
     
-    #Unfreeze last features for better learning
     for param in resnet.layer4.parameters():
         param.requires_grad = True
     
@@ -98,7 +90,6 @@ def train_resnet_kfold(dataset, test_loader, config, epochs=10, lr=0.001, model=
     else:
         resnet = model
 
-    # Para K-Fold calculamos os pesos sobre o dataset completo
     all_labels = np.array([dataset[i][1] for i in range(len(dataset))])
     classes = np.arange(config.num_classes)
     weights = compute_class_weight(class_weight="balanced", classes=classes, y=all_labels)

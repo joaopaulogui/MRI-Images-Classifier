@@ -10,21 +10,16 @@ from src.services.models.metrics import evaluate_model
 
 
 def setup_densenet(device, num_classes):
-    """
-    Carrega DenseNet201 pré-treinado e prepara para fine-tuning.
-    """
+    
     densenet = models.densenet201(weights=models.DenseNet201_Weights.DEFAULT)
 
-    # Congela tudo primeiro
     for param in densenet.parameters():
         param.requires_grad = False
 
-    # Descongela denseblock4 (mais capacidade de adaptação)
 
     for param in densenet.features.denseblock4.parameters():
         param.requires_grad = True
 
-    # Cabeça classificadora com Dropout para regularização
     num_in_features = densenet.classifier.in_features
     densenet.classifier = nn.Sequential(
         nn.Linear(num_in_features, 512),
@@ -40,11 +35,6 @@ def setup_densenet(device, num_classes):
 
 
 def _build_optimizer(model, lr):
-    """
-    Otimizador com grupos de LR diferenciados por profundidade.
-    - denseblock4: LR baixo
-    - classifier: LR normal
-    """
 
     base_model = model.module if isinstance(model, nn.DataParallel) else model
 
@@ -66,12 +56,10 @@ def train_densenet(train_loader, test_loader, config, epochs=50, lr=0.001, model
     else:
         densenet = model
 
-    # CrossEntropy com pesos por classe
     criterion = nn.CrossEntropyLoss(weight=config.class_weights, label_smoothing=0.1)
 
     optimizer = _build_optimizer(densenet, lr)
 
-    # ReduceLROnPlateau com patience maior para não decair LR rápido demais
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, mode="max", patience=config.reduce_lr_patience, factor=0.3, min_lr=1e-7
     )
@@ -107,7 +95,6 @@ def train_densenet_kfold(dataset, test_loader, config, epochs=10, lr=0.001, mode
     else:
         densenet = model
 
-    # Para K-Fold calculamos os pesos sobre o dataset completo
     all_labels = np.array([dataset[i][1] for i in range(len(dataset))])
     classes = np.arange(config.num_classes)
     weights = compute_class_weight(class_weight="balanced", classes=classes, y=all_labels)
