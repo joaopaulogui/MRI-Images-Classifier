@@ -36,6 +36,10 @@ def train_loop(model, optimizer, criterion, train_loader, config, epochs, test_l
             loss = criterion(guesses, labels)
 
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(
+                [p for p in model.parameters() if p.requires_grad],
+                max_norm=1.0
+            )
             optimizer.step()
 
             predicted = guesses.argmax(dim=1)
