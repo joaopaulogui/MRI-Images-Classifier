@@ -38,7 +38,7 @@ def train_loop(model, optimizer, criterion, train_loader, config, epochs, test_l
             loss.backward()
             torch.nn.utils.clip_grad_norm_(
                 [p for p in model.parameters() if p.requires_grad],
-                max_norm=1.0
+                max_norm=0.5
             )
             optimizer.step()
 
