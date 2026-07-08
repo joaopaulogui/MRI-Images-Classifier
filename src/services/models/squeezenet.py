@@ -16,7 +16,7 @@ def _build_optimizer(model, lr):
     return optim.Adam(
         [
             {"params": base_model.features[-6:].parameters(), "lr": lr / 20},
-            {"params": base_model.classifier.parameters(), "lr": lr/3},
+            {"params": base_model.classifier.parameters(), "lr": lr/5 },
         ],
         weight_decay=1e-3,
     )
