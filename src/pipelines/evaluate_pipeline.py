@@ -22,7 +22,7 @@ def evaluate_pipeline(data_dir, num_workers):
         "DenseNet": setup_densenet,
         "ResNet": setup_resnet,
         "SqueezeNet": setup_squeezenet,
-        #"ConvNeXt": setup_convnext,
+        "ConvNeXt": setup_convnext,
     }
 
     os.makedirs(os.path.dirname("generated/graphs/"), exist_ok=True)
