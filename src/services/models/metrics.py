@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 import torch.nn.functional as F
 from collections import Counter
@@ -31,7 +32,18 @@ def evaluate_model(model, test_loader):
 
     conf_matrix = confusion_matrix(all_labels, all_preds)
     sensitivity = (conf_matrix.diagonal() / conf_matrix.sum(axis=1)).mean()
-    specificity = (conf_matrix.diagonal() / conf_matrix.sum(axis=0)).mean()
+    
+    total = conf_matrix.sum()
+    specificities = []
+    for i in range(len(conf_matrix)):
+        TP = conf_matrix[i, i]
+        FN = conf_matrix[i, :].sum() - TP
+        FP = conf_matrix[:, i].sum() - TP
+        TN = total - TP - FN - FP
+        spec = TN / (TN + FP) if (TN + FP) > 0 else 0.0
+        specificities.append(spec)
+
+    specificity = np.mean(specificities)
 
     num_classes = len(set(all_labels))
     if num_classes == 2:
@@ -99,7 +111,18 @@ def ensemble_predict_argmax(models, best_model_idx, test_loader):
 
     conf_matrix = confusion_matrix(all_labels, all_final_preds)
     sensitivity = (conf_matrix.diagonal() / conf_matrix.sum(axis=1)).mean()
-    specificity = (conf_matrix.diagonal() / conf_matrix.sum(axis=0)).mean()
+    
+    total = conf_matrix.sum()
+    specificities = []
+    for i in range(len(conf_matrix)):
+        TP = conf_matrix[i, i]
+        FN = conf_matrix[i, :].sum() - TP
+        FP = conf_matrix[:, i].sum() - TP
+        TN = total - TP - FN - FP
+        spec = TN / (TN + FP) if (TN + FP) > 0 else 0.0
+        specificities.append(spec)
+
+    specificity = np.mean(specificities)
 
     num_classes = len(set(all_labels))
     if num_classes == 2:
@@ -161,7 +184,18 @@ def ensemble_predict_soft(models, test_loader, weighted = False, best_model_idx 
 
     conf_matrix = confusion_matrix(all_labels, all_final_preds)
     sensitivity = (conf_matrix.diagonal() / conf_matrix.sum(axis=1)).mean()
-    specificity = (conf_matrix.diagonal() / conf_matrix.sum(axis=0)).mean()
+    
+    total = conf_matrix.sum()
+    specificities = []
+    for i in range(len(conf_matrix)):
+        TP = conf_matrix[i, i]
+        FN = conf_matrix[i, :].sum() - TP
+        FP = conf_matrix[:, i].sum() - TP
+        TN = total - TP - FN - FP
+        spec = TN / (TN + FP) if (TN + FP) > 0 else 0.0
+        specificities.append(spec)
+
+    specificity = np.mean(specificities)
 
     num_classes = len(set(all_labels))
     if num_classes == 2:

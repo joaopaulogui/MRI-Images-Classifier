@@ -14,10 +14,6 @@ from src.utils.logger import Logger
 from src.services.controllers.train_controller import train_models
 
 def _get_class_weights(loader, num_classes, device):
-    """
-    Calcula pesos inversamente proporcionais à frequência de cada classe.
-    Essencial quando o dataset é desbalanceado.
-    """
     all_labels = []
     for _, labels in loader:
         all_labels.extend(labels.numpy())
@@ -29,9 +25,6 @@ def _get_class_weights(loader, num_classes, device):
     return torch.tensor(weights, dtype=torch.float32).to(device)
 
 def train_pipeline(train_data_dir, test_data_dir, epochs, lr, min_accuracy, num_workers, verbose, early_stopping_patience, reduce_lr_patience):
-    #train_ds = datasets.ImageFolder(root=train_data_dir)
-    #test_ds = datasets.ImageFolder(root=test_data_dir)
-    #classes = train_ds.classes
     
     train_ds, test_ds, classes = get_subsets(data_dir=train_data_dir)
 
@@ -60,8 +53,8 @@ def train_pipeline(train_data_dir, test_data_dir, epochs, lr, min_accuracy, num_
     )
 
     model_registry = {
-        #"DenseNet":   {"train_fn": train_densenet,   "train_kfold_fn": train_densenet_kfold},
-        #"ResNet":     {"train_fn": train_resnet,     "train_kfold_fn": train_resnet_kfold},
+        "DenseNet":   {"train_fn": train_densenet,   "train_kfold_fn": train_densenet_kfold},
+        "ResNet":     {"train_fn": train_resnet,     "train_kfold_fn": train_resnet_kfold},
         "SqueezeNet": {"train_fn": train_squeezenet, "train_kfold_fn": train_squeezenet_kfold},
         #"ConvNeXt": {"train_fn": train_convnext, "train_kfold_fn": train_convnext_kfold},
     }
